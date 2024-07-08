@@ -11,16 +11,19 @@
 1. 固定清洗规则 （clean_rule.py）
 > * split_pattern    #不影响语义分割文本的正则表达式
 > * rules   #特定小说数据清洗替换规则
+> * INV_CHAR #无效字符的正则表达式
+> * INV_SEG #无效段落的正则表达式
+> * INV_TITLE #章节标题的正则表达式
+> * PATTERNS # 实体类型与正则表达式映射字典
 2. 文本块清洗模块  (chunk_clean.py)
 
-**class: ChunkCleanTool** ：文本chunk的清洗
-> - [ ] remove_duplicates_exact: 精确匹配去重：对于段落列表中一模一样的段落进行去重
+[**class: ChunkCleanTool** ：文本chunk的清洗
+> - [ ] remove_duplicates_exact: 精确匹配去]()重：对于段落列表中一模一样的段落进行去重
 > - [ ] remove_duplicates_minhash: MinHash去重：对于段落列表中相似性较大的段落进行去重
 > - [ ] clean_text：对于小说文本片段进行数据清洗
 3. 整文本清洗模块（text_clean.py）
 class: TextCleanTool ：文本chunk的清洗
 > - [ ] cascade_deduplication: 级联去重：对于任意一段小说进行精确匹配去重和MinHash去重
-
 
 ### 2.文本切分
 文本切分(text_split.py) 是为了切分出不影响语义的且近固定长度的训练样本（文本chunk）
@@ -31,8 +34,11 @@ class: TextCleanTool ：文本chunk的清洗
 
 **Class: BookSplitTool :该类用于切分小说**
 > - [ ] split_text_into_head_tail: 将一个文本块按照tail_length分割成head和tail
+> - [ ] split_text_into_HT_by_ratio: 将一个文本块按照比例分割成head和tail
 > - [ ] custom_sampling: 从三个区间中随机抽样
 > - [ ] convert_book_to_chunks: 将小说切成随机长度的chunk
+> - [ ] convert_chunk_to_fixed_length_chunk: 将chunk切分成固定长度的chunk
+> - [ ] convert_chunk_to_fixed_length_chunk_and_add_noise: 将chunk切分成固定长度的chunk,并根据chean_rules.py 中的PATTERNS添加噪声
 > - [ ] convert_chunk_to_head_tail_seg: 将chunk切分成两段，切分的位置在min_idx与max_idx之间
 > - [ ] convert_chunk_to_segments: 将一个chunk切分成若干segments
 > - [ ] convert_book_into_segment: 将一整本书切分成若干segment
@@ -44,6 +50,9 @@ class: TextCleanTool ：文本chunk的清洗
 > - [ ] process_txt_file:尝试使用不同的编码读取和转换文本文件。
 > - [ ] save_to_jsonl:将文本数据保存为JSON Lines格式。
 > - [ ] process_folder_and_save_to_jsonl:遍历处理文件夹中的小说txt文件，将数据保存为一整个JSONL文件。
-
+> - [ ] save_labels_to_jsonl:将label数据保存为jsonl文件，用于序列标注模型。
+> - [ ] processed_rows:处理CSV文件，将每个文本的chunk列表元素拆分成单个元素占一列。
+> - [ ] convert_chunkCSV_to_bioJSONL:将含有切分后chunk的CSV文件转换为BIO标注后chunk的JSON文件。
+> - [ ] split_bioJSONL--将数据集切分为训练集、测试集和开发集
 ### 4.文本处理（待补充）
 文本处理模块的主要功能是处理小说文本，生成对应的章节目录列表

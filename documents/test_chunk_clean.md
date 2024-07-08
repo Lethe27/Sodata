@@ -14,7 +14,7 @@ unique_paragraphs_num:556
 repeated_text_num:0
 ```
 ### remove_duplicates_minhash
-```angular2html
+```python
 #2.测试remove_duplicates_minhash-- MinHash去重：对于段落列表中相似性较大的段落进行去重
 input_path = '/home/zhanghong/sodata/data/BL/墨香铜臭/《天官赐福》（精校版全本+番外完）作者：墨香铜臭.txt'
 text_data = FileProcessTool.process_txt_file(input_path)
@@ -29,7 +29,7 @@ repeated_text_num:437
 ```
 ### cascade_deduplication
 
-```angular2html
+```python
 #3.测试cascade_deduplication-- 对于任意一段小说进行精确匹配去重和MinHash模糊去重重
 input_path = '/home/zhanghong/sodata/data/BL/墨香铜臭/《天官赐福》（精校版全本+番外完）作者：墨香铜臭.txt'
 text_data = FileProcessTool.process_txt_file(input_path)
@@ -42,8 +42,8 @@ repeated_text_num:14894
 ```
 
 ### clean_text
-```angular2html
-4.测试clean_text-- 对于小说文本片段(chunk)进行数据清洗
+```python
+# 4.测试clean_text-- 对于小说文本片段(chunk)进行数据清洗
 input_path = '/home/zhanghong/sodata/data/BL/墨香铜臭/《天官赐福》（精校版全本+番外完）作者：墨香铜臭.txt'
 text_data = FileProcessTool.process_txt_file(input_path)
 chunk_list, chunk_size = BookSplitTool.convert_book_to_chunks(text_data)

@@ -362,7 +362,7 @@ class BookSplitTool:
             text = text[:-1] + replace_char
 
         return text
-
+ 
     @staticmethod
     def insert_noise(original_text, noise_count_range, noise_length_range, patterns_dict):
         """  
@@ -374,18 +374,18 @@ class BookSplitTool:
             noise_position_range: 噪声替换位置的范围，例如 (start, end)  
             patterns_dict: 正则表达式模式的字典  
         Returns:  
-            replace_text:替换噪声后的文本  
+            替换噪声后的文本  
         """
-        replace_text = original_text
         # 确保噪声位置范围有效  
-        start, end = (1, len(replace_text))
+        start, end = (1, len(original_text))
         min_count, max_count = noise_count_range
         min_len, max_len = noise_length_range
 
-       
+        # 用于记录已替换的字符数，以便更新end  
+        r1eplaced_chars = 0
         noise_count = random.randint(min_count, max_count)
         if noise_count==0:
-            return replace_text 
+            return original_text 
         for _ in range(noise_count):
             # 从PATTERNS字典中随机选择一个键  
             key = random.choice(list(patterns_dict.keys()))
@@ -403,11 +403,8 @@ class BookSplitTool:
                     if len(noise_text) > max_len:
                         noise_text = noise_text[:max_len]
                         break
-                    # 在区间内  
-                    if len(noise_text)> min_len and len(noise_text) < max_len:
-                        break
 
-            # 确保有足够的空间来替换  
+                        # 确保有足够的空间来替换  
             if end - start < len(noise_text):
                 continue 
 
@@ -415,48 +412,15 @@ class BookSplitTool:
             insert_position = random.randint(start, end - len(noise_text) - 1)
 
             # 替换噪声  
-            replace_text = replace_text[:insert_position] + noise_text + replace_text[insert_position + len(noise_text):]
+            original_text = original_text[:insert_position] + noise_text + original_text[insert_position + len(noise_text):]
 
             # 更新位置和已替换的字符数  
-            end = min(end, len(replace_text))
+            start = max(start, insert_position + len(noise_text))
+            end = min(end, len(original_text))
+            replaced_chars += len(noise_text)
 
-        return replace_text 
-    
-    @staticmethod
-    def add_error_pattern(original_text, noise_count_range, error_pattern_list):
-        """
-        在原始文本中插入模型错误识别的模式
-        Args:
-            original_text:  原始文本
-            noise_count_range: 噪声替换次数的范围，例如 (min_count, max_count)
-            error_pattern_list:  错误识别模式列表
-        Returns:
-            noise_text：替换噪声后的文本
-        """
-        noise_text = original_text
-        min_count, max_count = noise_count_range
-        start, end = (0,len(noise_text))
-        noise_count = random.randint(min_count, max_count)
-        if noise_count == 0:
-            return original_text
-        for _ in range(noise_count):
-            # 从ERROR PATTERNS列表中随机选择一个pattern
-            pattern_str = random.choice(error_pattern_list)
-            print( pattern_str )
-            # 确保有足够的空间来替换
-            if end - start < len(pattern_str):
-                continue
-
-            # 随机选择替换位置
-            insert_position = random.randint(start, end - len(pattern_str) - 1)
-
-            # 替换噪声
-            noise_text = noise_text[:insert_position] + pattern_str + noise_text[insert_position + len(pattern_str):]
-
-            # 更新位置和已替换的字符数
-            end = min(end, len(noise_text))
-
-        return noise_text
+        return original_text 
+        
     @staticmethod
     def convert_book_to_fixed_length_chunks(text: str, chunk_size: int = 1024) -> tuple:
         """

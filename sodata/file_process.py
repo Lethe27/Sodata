@@ -204,8 +204,20 @@ class FileProcessTool:
                                         separators=(',', ': ')) + '\n')
         print("-" * 20 + f"fixed_text_chunk已写入{file_prefix + '_Bio.jsonl'}" + "-" * 20)
 
-    @staticmethod 
-    def read_data_and_shuffle(input_file_path, random_state=42):
+    @staticmethod
+    def split_bioJSONL(input_file_path, output_path, p1: float, p2: float, random_state: int = 42):
+        """
+         将数据集切分为训练集、测试集和开发集
+         Args:
+             input_file_path: 原始文件路径
+             output_path: 输出文件夹路径
+             p1: 训练集占比
+             p2: 测试集占比
+             random_state: 随机种子
+         Returns:
+             None
+         """
+        def read_data(input_file_path, random_state=42):
             """
                 读取JSONL/CSV/TSV数据集并打乱数据
             Args:
@@ -230,38 +242,9 @@ class FileProcessTool:
                 return shuffled_data
             else:
                 raise ValueError("Unsupported file format. Only JSONL, CSV, and TSV are supported.")
-    @staticmethod
-    def collect_error_pattern(pattern_file ,limit_size :int = 3):
-        """
-        从pattern文件中收集错误模式
-        Args:
-            pattern_file:  pattern文件路径
-            limit_size:  出现次数
-        Returns:
-             add_pattern:采集到的错误模式列表
-        """
-        data=pd.read_csv(pattern_file,header=0)
-        add_pattern = []
-        for index, row in data.iterrows():
-            if row["Count"]>limit_size:
-                add_pattern.append(row["Error Key"])
-        return add_pattern
-    @staticmethod   
-    def split_bioJSONL(input_file_path, output_path, p1: float, p2: float, random_state: int = 42):
-    
-        """
-        将数据集切分为训练集、测试集和开发集
-        Args:
-            input_file_path: 原始文件路径
-            output_path: 输出文件夹路径
-            p1: 训练集占比
-            p2: 测试集占比
-            random_state: 随机种子
-        Returns:
-            None
-        """
+
         # 读取数据
-        data = FileProcessTool.read_data(input_file_path)
+        data = read_data(input_file_path)
 
         # 计算每个部分的样本数
         total_samples = len(data)
@@ -303,52 +286,4 @@ class FileProcessTool:
         print(f"Test set size: {len(test_data)}")
         print(f"Dev set size: {len(dev_data)}")
 
-    def convert_novel_to_chunklist(book_text,chunk_size = 512):
-        chunk_list, chunk_size = BookSplitTool.convert_book_to_fixed_length_chunks(book_text,chunk_size = chunk_size)
-        print(f"The fixed length of this chunk is {chunk_size}")
-        return chunk_list   
-    @staticmethod 
-    def read_novelJSONL_to_chunklist_csv(jsonl_path: str, save_path: str, line_number: int, column_names: str, max_workers: int = 20, concurrent_func = convert_novel_to_chunklist):
-        """
-        读取JSONL文件，处理得到文本chunk的head和tail存储在CSV文件中，下一步可以利用prompt获得response
-        Args:
-            jsonl_path:  jsonl文件路径,{"text":"……整个文本……"}
-            save_path:  保存的chunklist csv文件路径
-            line_number:  处理的jsonl文件行数
-            column_name:  保存的csv文件列名
-            max_workers:  最大并发数
-            concurrent_func:  并发函数,是需要用于切分chunk的函数，返回值是chunk_list,具体怎么切分需要重新构造
-        Returns:
-            df: 保存的DataFrame
-        """
-        df = pd.DataFrame(columns= column_names)
-        if os.path.isfile(jsonl_path):
-            with open(jsonl_path, 'r', encoding='utf-8') as file:
-                buffer = []
-                for idx, line in enumerate(file):
-                    if idx >= line_number:  # 只读取前num_lines行
-                        break
-                    json_line = json.loads(line)
-                    book_text = json_line['text']
-                    buffer.append(book_text)
-                    from concurrent.futures import ThreadPoolExecutor
-                    from tqdm import tqdm
-                    if len(buffer) == max_workers or idx == line_number - 1:
-                        with ThreadPoolExecutor(max_workers=max_workers) as executor:
-                            # 使用tqdm显示进度条，并调用并发函数处理每个文本
-                            results = list(tqdm(executor.map(concurrent_func, buffer),
-                                                total=len(buffer))) 
-                        # 动态收集并发的结果，并写入 DataFrame
-                        for text_chunk_col in results:
-
-                            row_data = dict(zip(column_names, text_chunk_col))  
-                            df_to_add = pd.DataFrame([row_data])
-                            df = pd.concat([df, df_to_add], ignore_index=True)
-                        
-                        # 清空buffer，为下一批文本做准备
-                        buffer = []
-                        # 将DataFrame保存为CSV文件
-                        df.to_csv(save_path, mode='w', header=True, index=None)
-
-        return df
 

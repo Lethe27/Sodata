@@ -3,6 +3,7 @@
 # @Author : zh 
 # @Time : 2024/4/16 下午2:17
 # @Desc : 测试文本切分模块
+import random
 
 from sodata.text_split import BookSplitTool, ChineseRecursiveTextSplitter
 from sodata.file_process import FileProcessTool
@@ -49,11 +50,11 @@ from sodata.file_process import FileProcessTool
 
 
 #2.测试convert_book_to_chunks--将一本书切分成多个文本块
-input_path = '/home/zhanghong/sodata/data/BL/墨香铜臭/《天官赐福》（精校版全本+番外完）作者：墨香铜臭.txt'
-text_data = FileProcessTool.process_txt_file(input_path)
-chunk_list, chunk_size = BookSplitTool.convert_book_to_chunks(text_data)
+# input_path = '/home/zhanghong/sodata/data/BL/墨香铜臭/《天官赐福》（精校版全本+番外完）作者：墨香铜臭.txt'
+# text_data = FileProcessTool.process_txt_file(input_path)
+# chunk_list, chunk_size = BookSplitTool.convert_book_to_chunks(text_data)
 # print(len(max(chunk_list, key=len)), chunk_size)
-print(f"max_chunK:{repr(max(chunk_list,key = len))}, chunk_size:{chunk_size}")
+# print(f"max_chunK:{repr(max(chunk_list,key = len))}, chunk_size:{chunk_size}")
 
 
 # #3.测试split_text_into_head_tail--将文本chunk切分成头尾两部分
@@ -86,3 +87,22 @@ print(f"max_chunK:{repr(max(chunk_list,key = len))}, chunk_size:{chunk_size}")
 # print(f"min_segment:{min_segment}, segments_len:{len(segments)}")
 # print(f"segments:{segments}")
 
+
+# # 7.测试split_text_into_HT_by_ratio--按照比例切分文本chunk
+# chunk = "第50章 玲珑骰只为一人安 3\n\u3000\u3000按理说, 人是不会知道自己的背影是什么样子的, 然而，谢怜不同。他对自己的背影, 是再熟悉不过了。\n\u3000\u3000当年仙乐国破后, 人们为了泄愤, 烧了他八千太子殿，推倒了所有的太子像, 盗走剑柄宝石, 刮走衣上黄金。可他们仍然不解恨，于是, 有人逐渐想出了一种新花样, 那就是专门塑造这种跪地石像。\n\u3000\u3000把原先他们高高供奉起来的太子殿下塑成跪地认罪的姿势, 摆放在人流众多处，鼓吹走过去时冲这木木的石像吐一口唾沫或抽打两下就可以去除晦气。或者更进一步，直接塑成伏地磕头状，用以代替门槛, 供千人踩万人踏。在仙乐灭国后的一二十年里, 许多城镇与村庄都能看到这些石像, 谢怜又如何会不熟悉自己跪下来后的背影是什么样的？\n\u3000\u3000正在此时，一个年轻男子的声音道：“裴宿这条小癞狗抱着裴种马的狗腿才巴巴地上了天，还真以"
+# head_text, tail_text = BookSplitTool.split_text_into_HT_by_ratio(chunk)
+# print(f"head_text Length:{len(head_text)}\ntail_text Length:{len(tail_text)}")
+
+# # 8.测试convert_book_to_fixed_length_chunks--按照固定长度切分文本chunk，并将chunk块进行预处理，便于训练序列标注模型
+# input_path = '/home/zhanghong/sodata/data/BL/墨香铜臭/《天官赐福》（精校版全本+番外完）作者：墨香铜臭.txt'
+# text_data = FileProcessTool.process_txt_file(input_path)
+# chunk_list, chunk_size = BookSplitTool.convert_book_to_fixed_length_chunks(text_data)
+# max_length = max(len(s) for s in chunk_list)
+# print(f"max_chunk:{max_length}, chunk_size:{chunk_size}")
+
+# # 9.测试convert_book_to_fixed_length_chunks_and_add_noise--按照固定长度切分文本chunk，并向预处理后的chunk块添加噪声
+# input_path = '/home/zhanghong/sodata/data/BL/墨香铜臭/《天官赐福》（精校版全本+番外完）作者：墨香铜臭.txt'
+# text_data = FileProcessTool.process_txt_file(input_path)
+#
+# chunk_list , chunk_size = BookSplitTool.convert_book_to_fixed_length_chunks_and_add_noise(text_data)
+# print(f"chunk_text:{random.choice(chunk_list)}, chunk_size:{chunk_size}")
