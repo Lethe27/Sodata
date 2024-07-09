@@ -55,4 +55,4 @@ class: TextCleanTool ：文本chunk的清洗
 > - [ ] convert_chunkCSV_to_bioJSONL:将含有切分后chunk的CSV文件转换为BIO标注后chunk的JSON文件。
 > - [ ] split_bioJSONL--将数据集切分为训练集、测试集和开发集
 ### 4.文本处理（待补充）
-文本处理模块的主要功能是处理小说文本，生成对应的章节目录列表
+文本处理模块的主要功能是处理小说文本，生成对应的章节目录列表.

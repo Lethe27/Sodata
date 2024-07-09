@@ -190,13 +190,13 @@ if "__main__" == __name__:
     #设置文件路径
     start_time = time.time()
     jsonl_path = os.path.join("/home/zhanghong/model_data/data/jsonl_data","BL_无海棠.jsonl")
-    save_path = os.path.join("/home/zhanghong/sodata/data/csv_data","shuf_BL_chunks_81.csv")
+    save_path = os.path.join("/home/zhanghong/sodata/data/csv_data","shuf_BL_chunks_82.csv")
 
     column_name = ["fixed_paragraph"]
     # column_name = ["head_paragraph","tail_paragraph"]
     print('正在处理文件:' + jsonl_path)
     
-    read_jsonl_to_ner_csv(jsonl_path, save_path, start_line = 81, end_line = 81)#闭区间
+    read_jsonl_to_ner_csv(jsonl_path, save_path, start_line = 82, end_line = 82)#闭区间
     print("finished!")
 
     end_time = time.time()
